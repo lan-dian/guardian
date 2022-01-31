@@ -1,32 +1,59 @@
-package com.landao.guardian;
+package com.landao.guardian.core;
 
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.landao.guardian.annotations.AuthorService;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.landao.guardian.GuardianProperties;
+import com.landao.guardian.ThreadStorage;
+import com.landao.guardian.annotations.GuardianService;
 import com.landao.guardian.annotations.UserId;
 import com.landao.guardian.consts.TokenConst;
+import com.landao.guardian.exception.token.TokenBeanException;
+import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
-import com.landao.guardian.util.NewxWebUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.landao.guardian.util.TokenUtil;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Set;
 
 /**
  * 用户认证服务
- * @param <T> 用户类型
+ * @param <T> tokenBean类型
+ * @param <R> tokenBeanId类型
  */
-public abstract class TokenService<T> {
+public abstract class TokenService<T,R> {
 
-    //todo 增多支持的的类型
     @Resource
     private GuardianProperties guardianProperties;
+
+    private final ThreadStorage<T,R> threadStorage=new ThreadStorage<>();
+
+    public T getTokenBean(){
+        return  threadStorage.getUser();
+    }
+
+    protected Set<String> getRoles(){
+        return Collections.emptySet();
+    }
+
+    public Set<String> getPermissions(){
+        return Collections.emptySet();
+    }
+
+    public R getUserId(){
+        return  threadStorage.getUserId();
+    }
+
+    public String getUserType() {
+        return threadStorage.getUserType();
+    }
 
     public String parseToken(T userBean){
         JWTCreator.Builder builder = JWT.create();
@@ -45,9 +72,11 @@ public abstract class TokenService<T> {
         if(!hasUserid){
             throw new TokenException("请至少在类中标注一个userId注解");
         }
-        builder.withClaim(TokenConst.userTypePrefix,getAnnotationUserType());
+        builder.withClaim(TokenConst.userType,getAnnotationUserType());
         return builder.sign(Algorithm.HMAC256(guardianProperties.getToken().getPrivateKey()));
     }
+
+    //下面都是系统方法
 
     /**
      * 设置token属性并且检查是否含有 {@link com.landao.guardian.annotations.UserId} 注解
@@ -61,11 +90,11 @@ public abstract class TokenService<T> {
         //是否为可以支持的类型
         Class<?> fieldType = field.getType();
         if (!isClaimType(fieldType)){
-            throw new TokenException("token不支持的类型:"+field.getType().getName());
+            throw new TokenException("tokenBean不支持的类型:"+field.getType().getName());
         }
         String fieldName = field.getName();//获取字段的名称
         if(fieldName.startsWith("$")){
-            throw new TokenException("不规范的属性命名:"+fieldName);
+            throw new TokenBeanException("字段命名不合法:"+fieldName);
         }
         //获取字段的值
         Object fieldValue = ReflectionUtils.getField(field, userBean);
@@ -74,7 +103,7 @@ public abstract class TokenService<T> {
             Integer value= (Integer) fieldValue;
             if(field.isAnnotationPresent(UserId.class)){
                 hasUserId=true;
-                builder.withClaim(TokenConst.userIdPrefix,value);
+                builder.withSubject(String.valueOf(value));
             }else {
                 builder.withClaim(fieldName,value);
             }
@@ -82,7 +111,7 @@ public abstract class TokenService<T> {
             String value=(String) fieldValue;
             if(field.isAnnotationPresent(UserId.class)){
                 hasUserId=true;
-                builder.withClaim(TokenConst.userIdPrefix,value);
+                builder.withSubject(value);
             }else {
                 builder.withClaim(fieldName,value);
             }
@@ -90,7 +119,7 @@ public abstract class TokenService<T> {
             Long value=(Long) fieldValue;
             if(field.isAnnotationPresent(UserId.class)){
                 hasUserId=true;
-                builder.withClaim(TokenConst.userIdPrefix,value);
+                builder.withSubject(String.valueOf(value));
             }else {
                 builder.withClaim(fieldName,value);
             }
@@ -101,12 +130,12 @@ public abstract class TokenService<T> {
     }
 
     private String getAnnotationUserType(){
-        AuthorService authorService = AnnotationUtils.findAnnotation(this.getClass(), AuthorService.class);
-        if(authorService==null){
+        GuardianService guardianService = AnnotationUtils.findAnnotation(this.getClass(), GuardianService.class);
+        if(guardianService ==null){
             throw new TokenException("请在认证类上标注@AuthorService注解");
         }
         //todo 支持别名
-        String userType=authorService.userType();
+        String userType= guardianService.userType();
         if(!StringUtils.hasText(userType)){
             throw new TokenException("用户类型不能为空");
         }
@@ -117,35 +146,50 @@ public abstract class TokenService<T> {
         return JavaTypeUtil.isInteger(clazz) || JavaTypeUtil.isString(clazz) || JavaTypeUtil.isLong(clazz);
     }
 
-    @SuppressWarnings("unchecked")
-    public T getTokenBean(){
-        return  (T) NewxWebUtil.getAttribute(TokenConst.requestAttributePrefix + "user");
-    }
-
-    public abstract Set<String> getRoles();
-
-    public abstract Set<String> getPermissions();
-
     /**
-     * 调用专为子类使用的{@link TokenService#getUserId(Class)}定义自己的id类型
+     * 初始化用户所有信息
      */
-    public abstract Object getUserId();
-
     @SuppressWarnings("unchecked")
-    protected <R> R getUserId(Class<R> tClass){
-        return  (R) NewxWebUtil.getAttribute(TokenConst.userIdPrefix);
-    }
-
-    public String getUserType() {
-        return (String) NewxWebUtil.getAttribute(TokenConst.requestAttributePrefix + "userType");
-    }
-
-    public static class TokenException extends RuntimeException{
-
-        public TokenException(String message) {
-            super(message);
+    void initUserInfo(String token,String userType){
+        DecodedJWT decodedJwt = TokenUtil.getDecodedJwt(token);
+        Class<?> tokenBeanClass = JavaTypeUtil.getFirstGeneraType(this);
+        T userBean=null;
+        try {
+            userBean = (T) tokenBeanClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new TokenBeanException(tokenBeanClass.getName()+"没有无参构造器");
         }
 
+        Field[] fields = tokenBeanClass.getDeclaredFields();
+        for (Field field : fields) {
+            setField(field,userBean,decodedJwt);
+        }
+        threadStorage.setUser(userBean);
+        threadStorage.setUserType(userType);
     }
+
+    @SuppressWarnings("unchecked")
+    private void setField(Field field, T userBean, DecodedJWT decoder){
+        Class<?> fieldType = field.getType();
+        Object fieldValue=null;
+        if(field.isAnnotationPresent(UserId.class)){
+            String subject = decoder.getSubject();
+            R userId=null;
+            if(JavaTypeUtil.isInteger(fieldType)){
+                userId= (R) Integer.valueOf(subject);
+            }else if(JavaTypeUtil.isLong(fieldType)){
+                userId =(R) Long.valueOf(subject);
+            }else if(JavaTypeUtil.isString(fieldType)){
+                userId= (R) subject;
+            }
+            threadStorage.setUserId(userId);
+            fieldValue=userId;
+        }else {
+            fieldValue=decoder.getClaim(field.getName()).as(fieldType);
+        }
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field,userBean,fieldValue);
+    }
+
 
 }

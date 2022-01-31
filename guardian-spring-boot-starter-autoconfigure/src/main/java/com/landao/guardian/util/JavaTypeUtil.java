@@ -2,14 +2,17 @@ package com.landao.guardian.util;
 
 
 
-import com.landao.guardian.TokenService;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
 public abstract class JavaTypeUtil {
 
+    /**
+     * 获取类的泛型类型
+     * @param obj 类
+     * @param index 第几个泛型的类型
+     */
     public static Class<?> getGeneraType(Object obj,int index){
         ParameterizedType parameterizedType =
                 (ParameterizedType) obj.getClass().getGenericSuperclass();
@@ -18,12 +21,18 @@ public abstract class JavaTypeUtil {
         try {
             return Class.forName(typeName);
         } catch (ClassNotFoundException e) {
-            throw new TokenService.TokenException("未找到:"+typeName);
+            //不可能发生
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static Class<?> getFirstGeneraType(Object obj){
         return getGeneraType(obj,0);
+    }
+
+    public static Class<?> getSecondGeneraType(Object obj){
+        return getGeneraType(obj,1);
     }
 
     public static boolean isInteger(Class<?> clazz){

@@ -1,7 +1,8 @@
 package com.landao.guardian.annotations;
 
 
-import com.newx.study.safe.enums.LogicType;
+import com.landao.guardian.consts.TokenConst;
+import com.landao.guardian.enums.LogicType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +15,7 @@ public @interface RequiredRole {
 
     String[] requiredRole() default {};
 
-    String userType() default "default";
+    String userType() default TokenConst.userType;
 
     LogicType logicType() default LogicType.Or;
 

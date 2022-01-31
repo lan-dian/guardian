@@ -1,5 +1,7 @@
 package com.landao.guardian.annotations;
 
+import com.landao.guardian.consts.GuardianConst;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,6 +11,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface RequiredLogin {
 
-    String userType() default "default";
+    String userType() default GuardianConst.defaultUserType;
 
 }
