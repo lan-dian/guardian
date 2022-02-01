@@ -30,7 +30,6 @@ import java.util.Objects;
 
 @Aspect
 @Order(0)
-@Controller
 public class TokenAspect {
 
     @Resource

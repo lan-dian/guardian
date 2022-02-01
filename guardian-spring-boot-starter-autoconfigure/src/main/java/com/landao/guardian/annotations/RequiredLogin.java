@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface RequiredLogin {
 
-    String userType() default GuardianConst.defaultUserType;
+    String[] onlyFor() default {};
+
+    String[] forbidden() default {};
 
 }

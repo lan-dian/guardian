@@ -164,7 +164,6 @@ public abstract class TokenService<T,R> {
             setField(field,userBean,decodedJwt);
         }
         threadStorage.setUser(userBean);
-        threadStorage.setUserType(userType);
         threadStorage.login();
         threadStorage.setTokenService(this);
     }

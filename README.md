@@ -70,4 +70,22 @@
 
 ## 登陆验证
 
-​	@RequiredLogin和@RequiredLogins，即可以标注在类上，又可以标注在方法上。依据就近原则，方法标注优先。目前全球唯一一个支持多注解的多用户鉴权。
+​	@RequiredLogin既可以标注在类上，又可以标注在方法上。依据就近原则，方法标注优先。
+
+
+
+- 单种用户
+   - 需要登陆
+      - @RequireLogin
+   - 不需要登陆
+      - 不标注
+- 多种用户(A,B,C....Z)
+   - 需要登陆
+      - 全部需要登陆
+         - @RequireLogin
+      - 只容许A,B使用
+         - @RequireLogin(onlyFor={"A","B"})
+      - 不容许B,C使用
+         - @RequireLogin(forbidden={"B","C"})
+   - 不需要登陆
+      - 不标注
