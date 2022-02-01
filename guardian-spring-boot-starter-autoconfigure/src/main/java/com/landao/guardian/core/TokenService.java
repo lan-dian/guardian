@@ -5,8 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.landao.guardian.GuardianProperties;
-import com.landao.guardian.ThreadStorage;
+import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.annotations.GuardianService;
 import com.landao.guardian.annotations.UserId;
 import com.landao.guardian.consts.TokenConst;
@@ -70,7 +69,7 @@ public abstract class TokenService<T,R> {
             }
         }
         if(!hasUserid){
-            throw new TokenException("请至少在类中标注一个userId注解");
+            throw new TokenException("请在类"+userBeanClass.getName()+"中至少唯一标注一个userId注解");
         }
         builder.withClaim(TokenConst.userType,getAnnotationUserType());
         return builder.sign(Algorithm.HMAC256(guardianProperties.getToken().getPrivateKey()));
@@ -166,6 +165,8 @@ public abstract class TokenService<T,R> {
         }
         threadStorage.setUser(userBean);
         threadStorage.setUserType(userType);
+        threadStorage.login();
+        threadStorage.setTokenService(this);
     }
 
     @SuppressWarnings("unchecked")

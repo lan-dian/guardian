@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ import java.util.Objects;
 
 @Aspect
 @Order(0)
+@Controller
 public class TokenAspect {
 
     @Resource
@@ -37,23 +39,24 @@ public class TokenAspect {
     public static final String or="||";
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)"
-            +or+"@annotation(org.springframework.stereotype.Controller)")
+            +or+"@within(org.springframework.stereotype.Controller)")
     public void pointCut() {
 
     }
 
+    @SuppressWarnings("rawtypes")
     @Before(value = "pointCut()")
     public void logBeforeController(JoinPoint joinPoint) {
-        Map<String, Object> tokenServices = applicationContext.getBeansWithAnnotation(GuardianService.class);
         if(TokenUtil.hasToken()){
             String token = TokenUtil.getToken();
             String userType = TokenUtil.getUserType(token);
-            Collection<Object> services = tokenServices.values();
+
+            Map<String, Object> tokenServices = applicationContext.getBeansWithAnnotation(GuardianService.class);
             //todo 升级为在注册组件的时候，把beanName设置为userType从而直接获取
-            for (Object service : services) {
+            for (Object service : tokenServices.values()) {
                 GuardianService guardianService = AnnotationUtils.findAnnotation(service.getClass(), GuardianService.class);
                 if(Objects.equals(userType, Objects.requireNonNull(guardianService).userType())){
-                    TokenService<?,?> tokenService = (TokenService<?,?>) service;
+                    TokenService tokenService = (TokenService) service;
                     tokenService.initUserInfo(token,userType);
                 }
             }
