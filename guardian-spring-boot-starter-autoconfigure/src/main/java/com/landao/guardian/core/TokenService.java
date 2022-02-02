@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 用户认证服务
@@ -175,9 +176,14 @@ public abstract class TokenService<T,R>{
         CurrentSubject.setUser(userBean);
         CurrentSubject.login();
         CurrentSubject.setTokenService(this);
-        CurrentSubject.setRoles(getRoles());
-        CurrentSubject.setPermissions(getPermissions());
+        CurrentSubject.setRoles(toLowerCase(getRoles()));
+        CurrentSubject.setPermissions(toLowerCase(getPermissions()));
     }
+
+    private Set<String> toLowerCase(Set<String> set){
+        return set.stream().map(String::toLowerCase).collect(Collectors.toSet());
+    }
+
 
     @SuppressWarnings("unchecked")
     private void setField(Field field, T userBean, DecodedJWT decoder){

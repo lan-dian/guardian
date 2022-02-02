@@ -2,6 +2,7 @@ package com.landao.guardian.interceptor;
 
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.core.LoginHandler;
+import com.landao.guardian.core.RoleHandler;
 import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.core.TokenHandler;
 import com.landao.guardian.util.TokenUtil;
@@ -27,6 +28,9 @@ public class GuardianInterceptor implements HandlerInterceptor {
     @Resource
     private LoginHandler loginHandler;
 
+    @Resource
+    private RoleHandler roleHandler;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获取处理method
@@ -44,9 +48,11 @@ public class GuardianInterceptor implements HandlerInterceptor {
             tokenHandler.initTokenBean(token,tokenProperties.getPrivateKey());
         }
 
-
         //登陆验证
         loginHandler.loginCheck(method);
+
+        //角色验证
+        roleHandler.checkRole(method);
 
         return true;
     }
