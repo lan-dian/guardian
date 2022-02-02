@@ -13,6 +13,7 @@ import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
 import com.landao.guardian.util.GuardianContext;
+import com.landao.guardian.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -158,8 +159,8 @@ public abstract class TokenService<T,R>{
      * 初始化用户所有信息
      */
     @SuppressWarnings("unchecked")
-    void initUserInfo(String token,String userType){
-        DecodedJWT decodedJwt = GuardianContext.getDecodedJwt(token);
+    void initUserInfo(String token,String privateKey){
+        DecodedJWT decodedJwt = TokenUtil.getDecodedJwt(token,privateKey);
         Class<?> tokenBeanClass = JavaTypeUtil.getFirstGeneraType(this);
         T userBean=null;
         try {
