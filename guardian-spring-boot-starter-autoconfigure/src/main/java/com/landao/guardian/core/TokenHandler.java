@@ -3,11 +3,10 @@ package com.landao.guardian.core;
 
 import com.landao.guardian.annotations.system.GuardianService;
 import com.landao.guardian.annotations.system.Handler;
-import com.landao.guardian.util.GuardianContext;
+import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.util.TokenUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class TokenHandler {
             if(Objects.equals(userType, Objects.requireNonNull(guardianService).userType())){
                 TokenService tokenService = (TokenService) service;
                 tokenService.initUserInfo(token,privateKey);
-                ThreadStorage.setUserType(userType);
+                CurrentSubject.setUserType(userType);
             }
         }
     }

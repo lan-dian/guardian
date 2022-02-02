@@ -9,12 +9,11 @@ import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.annotations.system.GuardianService;
 import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.consts.TokenConst;
+import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
-import com.landao.guardian.util.GuardianContext;
 import com.landao.guardian.util.TokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -36,10 +35,10 @@ public abstract class TokenService<T,R>{
 
     @SuppressWarnings("unchecked")
     public T getTokenBean(){
-        return (T)ThreadStorage.getUser();
+        return (T) CurrentSubject.getUser();
     }
 
-    protected Set<String> getRoles(){
+    public Set<String> getRoles(){
         return Collections.emptySet();
     }
 
@@ -49,11 +48,11 @@ public abstract class TokenService<T,R>{
 
     @SuppressWarnings("unchecked")
     public R getUserId(){
-        return (R) ThreadStorage.getUserId();
+        return (R) CurrentSubject.getUserId();
     }
 
     public String getUserType() {
-        return ThreadStorage.getUserType();
+        return CurrentSubject.getUserType();
     }
 
     public String parseToken(T userBean){
@@ -173,9 +172,11 @@ public abstract class TokenService<T,R>{
         for (Field field : fields) {
             setField(field,userBean,decodedJwt);
         }
-        ThreadStorage.setUser(userBean);
-        ThreadStorage.login();
-        ThreadStorage.setTokenService(this);
+        CurrentSubject.setUser(userBean);
+        CurrentSubject.login();
+        CurrentSubject.setTokenService(this);
+        CurrentSubject.setRoles(getRoles());
+        CurrentSubject.setPermissions(getPermissions());
     }
 
     @SuppressWarnings("unchecked")
@@ -192,7 +193,7 @@ public abstract class TokenService<T,R>{
             }else if(JavaTypeUtil.isString(fieldType)){
                 userId= (R) subject;
             }
-            ThreadStorage.setUserId(userId);
+            CurrentSubject.setUserId(userId);
             fieldValue=userId;
         }else {
             fieldValue=decoder.getClaim(field.getName()).as(fieldType);

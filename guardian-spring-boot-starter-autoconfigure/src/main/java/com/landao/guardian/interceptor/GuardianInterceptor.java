@@ -2,7 +2,7 @@ package com.landao.guardian.interceptor;
 
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.core.LoginHandler;
-import com.landao.guardian.core.ThreadStorage;
+import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.core.TokenHandler;
 import com.landao.guardian.util.TokenUtil;
 import org.springframework.util.StringUtils;
@@ -53,12 +53,12 @@ public class GuardianInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        ThreadStorage.clearAll();
+        CurrentSubject.clearAll();
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        ThreadStorage.clearAll();
+        CurrentSubject.clearAll();
     }
 
 }

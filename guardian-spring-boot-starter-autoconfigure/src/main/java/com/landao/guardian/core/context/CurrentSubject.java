@@ -1,10 +1,16 @@
-package com.landao.guardian.core;
+package com.landao.guardian.core.context;
 
 
+import com.landao.guardian.core.TokenService;
 import com.landao.guardian.exception.author.UnLoginException;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-public class ThreadStorage {
+
+public class CurrentSubject {
 
     private final static ThreadLocal<Object> user = new ThreadLocal<>();
 
@@ -17,9 +23,30 @@ public class ThreadStorage {
     @SuppressWarnings("rawtypes")
     private final static ThreadLocal<TokenService> tokenService=new ThreadLocal<>();
 
+    private final static ThreadLocal<Set<String>> roles=ThreadLocal.withInitial(Collections::emptySet);
+
+    private final static ThreadLocal<Set<String>> permissions=ThreadLocal.withInitial(Collections::emptySet);
+
+    public static void setRoles(Collection<String> roles){
+        CurrentSubject.roles.set(new HashSet<>(roles));
+    }
+
+    public static void setPermissions(Collection<String> permissions){
+        CurrentSubject.permissions.set(new HashSet<>(permissions));
+    }
+
+    public static Set<String> getRoles(){
+        return roles.get();
+    }
+
+    public static Set<String> getPermissions(){
+        return permissions.get();
+    }
+
+
     @SuppressWarnings("rawtypes")
     public static void setTokenService(TokenService tokenService){
-        ThreadStorage.tokenService.set(tokenService);
+        CurrentSubject.tokenService.set(tokenService);
     }
 
     @SuppressWarnings("rawtypes")
@@ -28,7 +55,7 @@ public class ThreadStorage {
     }
 
     public  static boolean isLogin(){
-        return ThreadStorage.login.get();
+        return CurrentSubject.login.get();
     }
 
     public static void login(){
@@ -55,15 +82,15 @@ public class ThreadStorage {
     }
 
     public static void setUser(Object user){
-        ThreadStorage.user.set(user);
+        CurrentSubject.user.set(user);
     }
 
     public static void setUserType(String userType){
-        ThreadStorage.userType.set(userType);
+        CurrentSubject.userType.set(userType);
     }
 
     public static void setUserId(Object userId){
-        ThreadStorage.userId.set(userId);
+        CurrentSubject.userId.set(userId);
     }
 
     private static void checkLogin(){
@@ -78,6 +105,8 @@ public class ThreadStorage {
         userId.remove();
         login.remove();
         tokenService.remove();
+        roles.remove();
+        permissions.remove();
     }
 
 }
