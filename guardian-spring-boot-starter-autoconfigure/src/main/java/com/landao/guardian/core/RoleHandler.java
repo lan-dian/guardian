@@ -35,7 +35,7 @@ public class RoleHandler {
     private void checkIfLogin(Method method,String userType){
         RequiredRole requiredRoleAnnotation = findRequiredRoleAnnotation(method, userType);
         if(requiredRoleAnnotation==null){
-            throw new AuthorizationException(userType+"无权访问该接口");
+            return;
         }
         LogicType logicType = requiredRoleAnnotation.logicType();
         Set<String> userRoles = CurrentSubject.getRoles();
