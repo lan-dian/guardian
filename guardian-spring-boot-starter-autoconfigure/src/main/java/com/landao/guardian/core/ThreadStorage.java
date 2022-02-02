@@ -3,76 +3,81 @@ package com.landao.guardian.core;
 
 import com.landao.guardian.exception.author.UnLoginException;
 
-public class ThreadStorage<T,R> {
 
-    private final ThreadLocal<T> user = new ThreadLocal<>();
+public class ThreadStorage {
 
-    private final ThreadLocal<String> userType=new ThreadLocal<>();
+    private final static ThreadLocal<Object> user = new ThreadLocal<>();
 
-    private final ThreadLocal<R> userId=new ThreadLocal<>();
+    private final static ThreadLocal<String> userType=new ThreadLocal<>();
 
-    private final ThreadLocal<Boolean> login=new ThreadLocal<>();
+    private final static ThreadLocal<Object> userId=new ThreadLocal<>();
 
-    @SuppressWarnings("rawtypes")
-    private final ThreadLocal<TokenService> tokenService=new ThreadLocal<>();
+    private final static ThreadLocal<Boolean> login=ThreadLocal.withInitial(()->Boolean.FALSE);
 
     @SuppressWarnings("rawtypes")
-    public void setTokenService(TokenService tokenService){
-        this.tokenService.set(tokenService);
+    private final static ThreadLocal<TokenService> tokenService=new ThreadLocal<>();
+
+    @SuppressWarnings("rawtypes")
+    public static void setTokenService(TokenService tokenService){
+        ThreadStorage.tokenService.set(tokenService);
     }
 
     @SuppressWarnings("rawtypes")
-    public TokenService getTokenService(){
-        return this.tokenService.get();
+    public static TokenService getTokenService(){
+        return tokenService.get();
     }
 
-    public boolean isLogin(){
-        Boolean login = this.login.get();
-        if(login==null){
-            this.login.set(Boolean.FALSE);
-        }
-        return this.login.get();
+    public  static boolean isLogin(){
+        return ThreadStorage.login.get();
     }
 
-    public void login(){
+    public static void login(){
         login.set(Boolean.TRUE);
     }
 
-    public void outLogin(){
+    public static void outLogin(){
         login.set(Boolean.FALSE);
     }
 
-    public T getUser() {
+    public static Object getUser() {
         checkLogin();
         return user.get();
     }
 
-    public String getUserType() {
+    public static String getUserType() {
         checkLogin();
         return userType.get();
     }
 
-    public R getUserId() {
+    public static Object getUserId() {
         checkLogin();
         return userId.get();
     }
 
-    public void setUser(T user){
-        this.user.set(user);
+    public static void setUser(Object user){
+        ThreadStorage.user.set(user);
     }
 
-    public void setUserType(String userType){
-        this.userType.set(userType);
+    public static void setUserType(String userType){
+        ThreadStorage.userType.set(userType);
     }
 
-    public void setUserId(R userId){
-        this.userId.set(userId);
+    public static void setUserId(Object userId){
+        ThreadStorage.userId.set(userId);
     }
 
-    private void checkLogin(){
+    private static void checkLogin(){
         if(!isLogin()){
             throw new UnLoginException();
         }
+    }
+
+    public static void clearAll(){
+        user.remove();
+        userType.remove();
+        userId.remove();
+        login.remove();
+        tokenService.remove();
     }
 
 }

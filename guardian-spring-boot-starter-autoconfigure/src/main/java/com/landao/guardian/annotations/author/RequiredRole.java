@@ -1,4 +1,4 @@
-package com.landao.guardian.annotations;
+package com.landao.guardian.annotations.author;
 
 
 import com.landao.guardian.consts.TokenConst;

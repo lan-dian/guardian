@@ -15,13 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 
-public class TokenUtil {
+public class GuardianContext {
 
     private static GuardianProperties guardianProperties;
 
     @Autowired
     private void setGuardianProperties(GuardianProperties guardianProperties) {
-        TokenUtil.guardianProperties = guardianProperties;
+        GuardianContext.guardianProperties = guardianProperties;
     }
 
     /**

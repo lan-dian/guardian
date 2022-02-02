@@ -1,4 +1,4 @@
-package com.landao.guardian.annotations;
+package com.landao.guardian.annotations.system;
 
 import com.landao.guardian.consts.GuardianConst;
 import org.springframework.stereotype.Component;

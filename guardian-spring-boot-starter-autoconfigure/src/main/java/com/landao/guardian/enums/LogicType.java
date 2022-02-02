@@ -9,6 +9,10 @@ public enum LogicType {
     /**
      * 全部满足
      */
-    And;
+    And,
+    /**
+     * 不是能是前面的任意一个
+     */
+    Not;
 
 }

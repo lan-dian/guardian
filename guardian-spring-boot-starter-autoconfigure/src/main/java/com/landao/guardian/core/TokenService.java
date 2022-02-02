@@ -6,13 +6,14 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.landao.guardian.config.GuardianProperties;
-import com.landao.guardian.annotations.GuardianService;
-import com.landao.guardian.annotations.UserId;
+import com.landao.guardian.annotations.system.GuardianService;
+import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.consts.TokenConst;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
-import com.landao.guardian.util.TokenUtil;
+import com.landao.guardian.util.GuardianContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -27,15 +28,14 @@ import java.util.Set;
  * @param <T> tokenBean类型
  * @param <R> tokenBeanId类型
  */
-public abstract class TokenService<T,R> {
+public abstract class TokenService<T,R>{
 
     @Resource
     private GuardianProperties guardianProperties;
 
-    private final ThreadStorage<T,R> threadStorage=new ThreadStorage<>();
-
+    @SuppressWarnings("unchecked")
     public T getTokenBean(){
-        return  threadStorage.getUser();
+        return (T)ThreadStorage.getUser();
     }
 
     protected Set<String> getRoles(){
@@ -46,12 +46,13 @@ public abstract class TokenService<T,R> {
         return Collections.emptySet();
     }
 
+    @SuppressWarnings("unchecked")
     public R getUserId(){
-        return  threadStorage.getUserId();
+        return (R) ThreadStorage.getUserId();
     }
 
     public String getUserType() {
-        return threadStorage.getUserType();
+        return ThreadStorage.getUserType();
     }
 
     public String parseToken(T userBean){
@@ -76,9 +77,17 @@ public abstract class TokenService<T,R> {
     }
 
     //下面都是系统方法
+    /*@Override
+    public String generateBeanName(BeanDefinition beanDefinition, BeanDefinitionRegistry beanDefinitionRegistry) {
+        GuardianService guardianService = AnnotationUtils.findAnnotation(this.getClass(), GuardianService.class);
+        if(guardianService==null){
+            throw new GuardianAnnotationException("请在"+this.getClass().getName()+"标注GuardService注解");
+        }
+        return guardianService.userType();
+    }*/
 
     /**
-     * 设置token属性并且检查是否含有 {@link com.landao.guardian.annotations.UserId} 注解
+     * 设置token属性并且检查是否含有 {@link UserId} 注解
      * @param field 属性字段
      * @param userBean 用户定义的token
      * @param builder jwt构建者
@@ -150,7 +159,7 @@ public abstract class TokenService<T,R> {
      */
     @SuppressWarnings("unchecked")
     void initUserInfo(String token,String userType){
-        DecodedJWT decodedJwt = TokenUtil.getDecodedJwt(token);
+        DecodedJWT decodedJwt = GuardianContext.getDecodedJwt(token);
         Class<?> tokenBeanClass = JavaTypeUtil.getFirstGeneraType(this);
         T userBean=null;
         try {
@@ -163,9 +172,9 @@ public abstract class TokenService<T,R> {
         for (Field field : fields) {
             setField(field,userBean,decodedJwt);
         }
-        threadStorage.setUser(userBean);
-        threadStorage.login();
-        threadStorage.setTokenService(this);
+        ThreadStorage.setUser(userBean);
+        ThreadStorage.login();
+        ThreadStorage.setTokenService(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -182,7 +191,7 @@ public abstract class TokenService<T,R> {
             }else if(JavaTypeUtil.isString(fieldType)){
                 userId= (R) subject;
             }
-            threadStorage.setUserId(userId);
+            ThreadStorage.setUserId(userId);
             fieldValue=userId;
         }else {
             fieldValue=decoder.getClaim(field.getName()).as(fieldType);
