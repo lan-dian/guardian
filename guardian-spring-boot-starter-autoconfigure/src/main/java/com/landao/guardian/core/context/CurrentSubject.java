@@ -4,10 +4,7 @@ package com.landao.guardian.core.context;
 import com.landao.guardian.core.TokenService;
 import com.landao.guardian.exception.author.UnLoginException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class CurrentSubject {
@@ -27,6 +24,17 @@ public class CurrentSubject {
 
     private final static ThreadLocal<Set<String>> permissions=ThreadLocal.withInitial(Collections::emptySet);
 
+    private final static ThreadLocal<Object> extra=new ThreadLocal<>();
+
+    public static void setExtra(Object obj){
+        extra.set(obj);
+    }
+
+    public static Object getExtra(){
+        return extra.get();
+    }
+
+
     public static void setRoles(Collection<String> roles){
         CurrentSubject.roles.set(new HashSet<>(roles));
     }
@@ -36,10 +44,12 @@ public class CurrentSubject {
     }
 
     public static Set<String> getRoles(){
+        checkLogin();
         return roles.get();
     }
 
     public static Set<String> getPermissions(){
+        checkLogin();
         return permissions.get();
     }
 
@@ -51,6 +61,7 @@ public class CurrentSubject {
 
     @SuppressWarnings("rawtypes")
     public static TokenService getTokenService(){
+        checkLogin();
         return tokenService.get();
     }
 
@@ -107,6 +118,7 @@ public class CurrentSubject {
         tokenService.remove();
         roles.remove();
         permissions.remove();
+        extra.remove();
     }
 
 }

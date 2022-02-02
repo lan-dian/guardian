@@ -10,6 +10,7 @@ import com.landao.guardian.annotations.system.GuardianService;
 import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.consts.TokenConst;
 import com.landao.guardian.core.context.CurrentSubject;
+import com.landao.guardian.core.context.GuardianContext;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
@@ -33,6 +34,16 @@ public abstract class TokenService<T,R>{
 
     @Resource
     private GuardianProperties guardianProperties;
+
+
+    public void setExtra(){
+        GuardianContext.setExtra(null);
+    }
+
+    @SuppressWarnings("all")
+    public <U> U getExtra(Class<U> type){
+        return (U)CurrentSubject.getExtra();
+    }
 
     @SuppressWarnings("unchecked")
     public T getTokenBean(){

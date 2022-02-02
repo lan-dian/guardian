@@ -54,6 +54,9 @@ public class GuardianInterceptor implements HandlerInterceptor {
         //角色验证
         roleHandler.checkRole(method);
 
+        //设置额外字段
+        CurrentSubject.getTokenService().setExtra();
+
         return true;
     }
 

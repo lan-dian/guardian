@@ -64,6 +64,14 @@ public class GuardianContext {
         return (TokenService<T,R>)CurrentSubject.getTokenService();
     }
 
+    public static void setExtra(Object obj){
+        CurrentSubject.setExtra(obj);
+    }
+
+    @SuppressWarnings("all")
+    public static <T> T getExtra(Class<T> type){
+        return (T) CurrentSubject.getExtra();
+    }
 
 
 }
