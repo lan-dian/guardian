@@ -42,20 +42,18 @@ public class LoginHandler {
             if (onlyFor.length != 0 || forbidden.length != 0) {
                 String userType = CurrentSubject.getUserType();
                 if(onlyFor.length!=0){//设置了仅仅容许部分用户登陆
-                    Optional<String> allowed = Arrays.stream(onlyFor)
-                            .filter(E -> Objects.equals(E, userType))
-                            .findAny();
-                    if(allowed.isPresent()){
-                        return;
+                    for (String allowed : onlyFor) {
+                        if(Objects.equals(allowed,userType)){
+                            return;
+                        }
                     }
                     //没有在onlyFor找到我
                     throw new UnLoginException("仅容许"+ Arrays.toString(onlyFor)+"调用该接口");
                 }else {
-                    Optional<String> ban = Arrays.stream(forbidden)
-                            .filter(E->Objects.equals(E,userType))
-                            .findAny();
-                    if(ban.isPresent()){
-                        throw new UnLoginException(userType+"禁止访问该接口");
+                    for (String ban : forbidden) {
+                        if(Objects.equals(ban,userType)){
+                            throw new UnLoginException(userType+"禁止访问该接口");
+                        }
                     }
                 }
             } //两个长度都为0
