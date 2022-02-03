@@ -1,6 +1,7 @@
 package com.landao.guardian.interceptor;
 
 import com.landao.guardian.config.GuardianProperties;
+import com.landao.guardian.core.BanHandler;
 import com.landao.guardian.core.LoginHandler;
 import com.landao.guardian.core.AuthorHandler;
 import com.landao.guardian.core.context.CurrentSubject;
@@ -31,6 +32,9 @@ public class GuardianInterceptor implements HandlerInterceptor {
     @Resource
     private AuthorHandler authorHandler;
 
+    @Resource
+    private BanHandler banHandler;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获取处理method
@@ -50,6 +54,10 @@ public class GuardianInterceptor implements HandlerInterceptor {
 
         //登陆验证
         loginHandler.loginCheck(method);
+
+        if(CurrentSubject.isLogin()){
+            banHandler.checkBan();
+        }
 
         //权限验证
         authorHandler.checkAuthor(method);

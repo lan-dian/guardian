@@ -11,6 +11,8 @@ import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.consts.TokenConst;
 import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.core.context.GuardianContext;
+import com.landao.guardian.core.interfaces.BanDTO;
+import com.landao.guardian.entity.model.DefaultBanDTO;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
@@ -65,6 +67,10 @@ public abstract class TokenService<T,R>{
 
     public String getUserType() {
         return CurrentSubject.getUserType();
+    }
+
+    public BanDTO checkBan(){
+        return new DefaultBanDTO();
     }
 
     public String parseToken(T userBean){

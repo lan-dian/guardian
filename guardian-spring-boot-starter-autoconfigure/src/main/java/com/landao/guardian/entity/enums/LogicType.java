@@ -1,4 +1,4 @@
-package com.landao.guardian.enums;
+package com.landao.guardian.entity.enums;
 
 public enum LogicType {
 
@@ -14,5 +14,4 @@ public enum LogicType {
      * 不是能是前面的任意一个
      */
     Not;
-
 }

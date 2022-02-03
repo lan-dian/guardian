@@ -9,11 +9,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
 @Handler
-public class TokenHandler {
+public class TokenHandler{
 
     @Resource
     private ApplicationContext applicationContext;
@@ -34,7 +35,5 @@ public class TokenHandler {
             }
         }
     }
-
-
 
 }
