@@ -304,6 +304,29 @@ public void addInterceptors(InterceptorRegistry registry) {
 
 ​	默认自动配置，解决cors问题，但是如果你配置了，我的配置就不会生效，另外提供yaml自定义
 
+## 自定义Handler
+
+​	在完成注解校验后，框架会执行所有用户自己定义的Handler，而用户只需要继承`GuardianHandler`接口
+
+```java
+public interface GuardianHandler extends Ordered {
+
+    /**
+     * 返回值决定是否继续往下拦截
+     * @param method 你要执行的controller中的方法
+     */
+    boolean handler(Method method);
+    
+    @Override
+    default int getOrder(){
+        return 0;
+    }
+
+}
+```
+
+​	记得把自己定义的Handler加入spring的bean中，只要一个@Compent注解就可以了
+
 ## TODO
 
 - [ ] 策略模式,自定义tokenBean转换规则

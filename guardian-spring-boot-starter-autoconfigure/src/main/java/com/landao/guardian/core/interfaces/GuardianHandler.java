@@ -14,4 +14,9 @@ public interface GuardianHandler extends Ordered {
      */
     boolean handler(Method method);
 
+    @Override
+    default int getOrder(){
+        return 0;
+    }
+
 }
