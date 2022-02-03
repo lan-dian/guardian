@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import java.security.Permission;
 
 @Configuration
 public class GuardianConfigurer implements WebMvcConfigurer {
@@ -25,6 +26,7 @@ public class GuardianConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(guardianInterceptor).addPathPatterns(interceptor.getIncludedPathPatterns())
                 .excludePathPatterns(interceptor.getExcludePathPatterns())
                 .order(interceptor.getOrder());
+
     }
 
 }

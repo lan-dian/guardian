@@ -187,12 +187,6 @@ public abstract class TokenService<T,R>{
         CurrentSubject.setUser(userBean);
         CurrentSubject.login();
         CurrentSubject.setTokenService(this);
-        CurrentSubject.setRoles(toLowerCase(getRoles()));
-        CurrentSubject.setPermissions(toLowerCase(getPermissions()));
-    }
-
-    private Set<String> toLowerCase(Set<String> set){
-        return set.stream().map(String::toLowerCase).collect(Collectors.toSet());
     }
 
 

@@ -3,6 +3,7 @@ package com.landao.guardian.core.context;
 
 import com.landao.guardian.core.TokenService;
 import com.landao.guardian.exception.author.UnLoginException;
+import com.landao.guardian.util.GuardianUtil;
 
 import java.util.*;
 
@@ -20,9 +21,9 @@ public class CurrentSubject {
     @SuppressWarnings("rawtypes")
     private final static ThreadLocal<TokenService> tokenService=new ThreadLocal<>();
 
-    private final static ThreadLocal<Set<String>> roles=ThreadLocal.withInitial(Collections::emptySet);
+    private final static ThreadLocal<Set<String>> roles=new ThreadLocal<>();
 
-    private final static ThreadLocal<Set<String>> permissions=ThreadLocal.withInitial(Collections::emptySet);
+    private final static ThreadLocal<Set<String>> permissions=new ThreadLocal<>();
 
     private final static ThreadLocal<Object> extra=new ThreadLocal<>();
 
@@ -34,22 +35,31 @@ public class CurrentSubject {
         return extra.get();
     }
 
-
-    public static void setRoles(Collection<String> roles){
-        CurrentSubject.roles.set(new HashSet<>(roles));
-    }
-
-    public static void setPermissions(Collection<String> permissions){
-        CurrentSubject.permissions.set(new HashSet<>(permissions));
-    }
-
+    @SuppressWarnings("all")
     public static Set<String> getRoles(){
         checkLogin();
+        if(roles.get()==null){
+            synchronized (CurrentSubject.class){
+                if(roles.get()==null){
+                    Set<String> roles = tokenService.get().getRoles();
+                    CurrentSubject.roles.set(GuardianUtil.toLowerCase(roles));
+                }
+            }
+        }
         return roles.get();
     }
 
+    @SuppressWarnings("all")
     public static Set<String> getPermissions(){
         checkLogin();
+        if(permissions.get()==null){
+            synchronized (CurrentSubject.class){
+                if(permissions.get()==null){
+                    Set<String> permissions = tokenService.get().getPermissions();
+                    CurrentSubject.permissions.set(GuardianUtil.toLowerCase(permissions));
+                }
+            }
+        }
         return permissions.get();
     }
 

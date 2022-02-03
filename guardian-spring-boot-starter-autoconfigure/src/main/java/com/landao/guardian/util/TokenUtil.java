@@ -7,9 +7,11 @@ import com.landao.guardian.consts.TokenConst;
 import com.landao.guardian.exception.token.TokenException;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
+/**
+ * 工具类不适合用户使用
+ */
 public abstract class TokenUtil {
 
     /**
