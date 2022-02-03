@@ -1,13 +1,18 @@
 package com.landao.guardian.interceptor;
 
+import com.landao.guardian.config.GuardianProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import javax.crypto.spec.GCMParameterSpec;
 
 @Configuration
 public class GuardianConfigurer implements WebMvcConfigurer {
+
+    @Resource
+    private GuardianProperties guardianProperties;
 
     @Resource
     private GuardianInterceptor guardianInterceptor;
@@ -17,7 +22,8 @@ public class GuardianConfigurer implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(guardianInterceptor).addPathPatterns("/**");
+        GuardianProperties.Interceptor interceptor = guardianProperties.getInterceptor();
+        registry.addInterceptor(guardianInterceptor).addPathPatterns("/**").order(interceptor.getOrder());
     }
 
 }

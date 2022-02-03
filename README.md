@@ -2,6 +2,92 @@
 
 > an easy but power security framework
 
+# 使用
+
+> 导包
+
+```java
+<groupId>com.landao</groupId>
+<artifactId>guardian-spring-boot-starter</artifactId>
+<version>1.0-SNAPSHOT</version>
+```
+
+​	目前没有上传到中央仓库，因为几乎每天更新好几个功能，可以git下来后自己安装，push上来的肯定都是可用的版本
+
+> yaml
+
+```yaml
+guardian:
+  token:
+    private-key: 'toekn密钥'
+```
+
+> 认证服务
+
+```java
+
+/**
+ * UserTokenDTO 可以自定义在token中保存的信息
+ */
+@GuardianService
+public class UserAuthorService extends TokenService<UserTokenDTO,Integer> {
+
+    /**
+     * 可以注入其他组件，增强功能
+     */
+    @Resource
+    StudentService studentService;
+
+    @Resource
+    StudentRoleService studentRoleService;
+
+    @Override
+    public Set<String> getRoles() {
+        return studentRoleService.getStringRole(getUserId());
+    }
+
+    public String getName(){
+        return getTokenBean().getName();
+    }
+
+    public Integer getBuildId(){
+        Student student = studentService.lambdaQuery().eq(Student::getStudentId, getUserId()).one();
+        return student.getBuildId();
+    }
+
+}
+```
+
+这个时候就可以使用了！！！
+
+> 简单使用
+
+```java
+    @RequiredRole(roles = {RoleConst.student,RoleConst.teacher})
+    @ApiOperation("查看我的预约")
+    @GetMapping("/history")
+    public CommonResult<PageDTO<HistoryAppointment>> getHistory(@RequestParam(defaultValue = "1") Integer page,
+                                                                      @RequestParam(defaultValue = "7") Integer limit) {
+        CommonResult<PageDTO<HistoryAppointment>> result = new CommonResult<>();
+
+        if (page <= 0 || limit <= 0) {
+            return result.err("分页参数异常");
+        }
+
+        Integer studentId = userAuthorService.getUserId();
+
+        PageDTO<HistoryAppointment> pageDTO = seatService.pageHistoryAppointments(page, limit, studentId);
+
+        return result.body(pageDTO);
+    }
+```
+
+> 支持线程上下文
+
+​	如果你不喜欢这种注入service的方式，你可以使用`GuardianContext.getUserId()`来直接获取所有的上下文信心，我保证所有操作不会超过一行代码！
+
+​	当然，GuardianService注入模式本质是就是一个自带登陆信息的你的普通userService的增强版。
+
 # 特色
 
 ## 简约而不简单
@@ -19,6 +105,18 @@
 > 配置灵活
 
 ​	支持在tokenService**代码级别**满足你对认证的一切幻想
+
+> 自定义切面顺序
+
+```java
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    GuardianProperties.Interceptor interceptor = guardianProperties.getInterceptor();
+    registry.addInterceptor(guardianInterceptor).addPathPatterns("/**").order(interceptor.getOrder());
+}
+```
+
+​	**注意**:直接在yaml配置就可以，这里是想告诉你怎么使用这个order(每个配置项我都生成了自动提示的功能)
 
 ## 自定义tokenBean
 

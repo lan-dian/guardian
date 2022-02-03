@@ -11,6 +11,16 @@ public class GuardianProperties {
 
     private Cors cors=new Cors();
 
+    public Interceptor getInterceptor() {
+        return interceptor;
+    }
+
+    public void setInterceptor(Interceptor interceptor) {
+        this.interceptor = interceptor;
+    }
+
+    private Interceptor interceptor=new Interceptor();
+
     public GuardianProperties() {
     }
 
@@ -84,8 +94,22 @@ public class GuardianProperties {
             this.mapping = mapping;
         }
 
+    }
 
+    public static class Interceptor{
 
+        private Integer order=0;
+
+        public Interceptor() {
+        }
+
+        public Integer getOrder() {
+            return order;
+        }
+
+        public void setOrder(Integer order) {
+            this.order = order;
+        }
     }
 
 }
