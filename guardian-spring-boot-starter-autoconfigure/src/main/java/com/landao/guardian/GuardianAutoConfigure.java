@@ -2,7 +2,6 @@ package com.landao.guardian;
 
 import com.landao.guardian.core.TokenService;
 import com.landao.guardian.interceptor.GuardianInterceptor;
-import com.landao.guardian.config.CorsConfig;
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.core.context.GuardianContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -26,10 +25,10 @@ public class GuardianAutoConfigure {
         return new GuardianInterceptor();
     }
 
-    @Bean
+/*    @Bean
     @ConditionalOnMissingBean(CorsConfig.class)
     public CorsConfig corsConfig(){
         return new CorsConfig();
-    }
+    }*/
 
 }

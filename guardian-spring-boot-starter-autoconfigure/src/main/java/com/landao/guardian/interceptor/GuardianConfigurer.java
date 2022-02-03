@@ -23,7 +23,9 @@ public class GuardianConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         GuardianProperties.Interceptor interceptor = guardianProperties.getInterceptor();
-        registry.addInterceptor(guardianInterceptor).addPathPatterns("/**").order(interceptor.getOrder());
+        registry.addInterceptor(guardianInterceptor).addPathPatterns("/**")
+                .excludePathPatterns(interceptor.getExcludePatterns())
+                .order(interceptor.getOrder());
     }
 
 }

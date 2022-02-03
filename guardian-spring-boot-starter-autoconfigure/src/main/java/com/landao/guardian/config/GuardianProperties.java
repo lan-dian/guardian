@@ -4,6 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Set;
+
 @ConfigurationProperties(prefix = "guardian")
 public class GuardianProperties {
 
@@ -100,6 +102,8 @@ public class GuardianProperties {
 
         private Integer order=0;
 
+        private String[] excludePatterns;
+
         public Interceptor() {
         }
 
@@ -109,6 +113,14 @@ public class GuardianProperties {
 
         public void setOrder(Integer order) {
             this.order = order;
+        }
+
+        public String[] getExcludePatterns() {
+            return excludePatterns;
+        }
+
+        public void setExcludePatterns(String[] excludePatterns) {
+            this.excludePatterns = excludePatterns;
         }
     }
 

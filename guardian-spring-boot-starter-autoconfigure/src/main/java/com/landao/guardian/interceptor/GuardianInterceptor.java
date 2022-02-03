@@ -55,8 +55,9 @@ public class GuardianInterceptor implements HandlerInterceptor {
         roleHandler.checkRole(method);
 
         //设置额外字段
-        CurrentSubject.getTokenService().setExtra();
-
+        if(CurrentSubject.isLogin()){
+            CurrentSubject.getTokenService().setExtra();
+        }
         return true;
     }
 
