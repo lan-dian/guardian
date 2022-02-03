@@ -6,7 +6,10 @@ import com.landao.guardian.core.LoginHandler;
 import com.landao.guardian.core.AuthorHandler;
 import com.landao.guardian.core.context.CurrentSubject;
 import com.landao.guardian.core.TokenHandler;
+import com.landao.guardian.core.interfaces.GuardianHandler;
 import com.landao.guardian.util.TokenUtil;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,9 +19,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class GuardianInterceptor implements HandlerInterceptor {
+
+    @Resource
+    private ApplicationContext applicationContext;
 
     @Resource
     private GuardianProperties guardianProperties;
@@ -66,6 +75,18 @@ public class GuardianInterceptor implements HandlerInterceptor {
         if(CurrentSubject.isLogin()){
             CurrentSubject.getTokenService().setExtra();
         }
+
+        Map<String, GuardianHandler> handlers = applicationContext.getBeansOfType(GuardianHandler.class);
+
+        for (GuardianHandler guardianHandler : handlers.values().stream()
+                .sorted(Comparator.comparingInt(Ordered::getOrder))
+                .collect(Collectors.toList())) {
+            boolean keepOn = guardianHandler.handler(method);
+            if(!keepOn){
+                break;
+            }
+        }
+
         return true;
     }
 
