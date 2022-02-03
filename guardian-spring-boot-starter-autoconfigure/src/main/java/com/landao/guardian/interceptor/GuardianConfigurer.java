@@ -6,7 +6,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
-import javax.crypto.spec.GCMParameterSpec;
 
 @Configuration
 public class GuardianConfigurer implements WebMvcConfigurer {
@@ -23,8 +22,8 @@ public class GuardianConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         GuardianProperties.Interceptor interceptor = guardianProperties.getInterceptor();
-        registry.addInterceptor(guardianInterceptor).addPathPatterns("/**")
-                .excludePathPatterns(interceptor.getExcludePatterns())
+        registry.addInterceptor(guardianInterceptor).addPathPatterns(interceptor.getIncludedPathPatterns())
+                .excludePathPatterns(interceptor.getExcludePathPatterns())
                 .order(interceptor.getOrder());
     }
 

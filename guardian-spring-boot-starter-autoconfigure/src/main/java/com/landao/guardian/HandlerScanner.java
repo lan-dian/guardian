@@ -7,4 +7,5 @@ import org.springframework.context.annotation.FilterType;
 @ComponentScan(basePackages = "com.landao.guardian.core",
         includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Handler.class))
 public class HandlerScanner {
+
 }
