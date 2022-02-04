@@ -296,7 +296,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 
 > 自定义id
 
-​	todo 利用bean id直接从spring容器中获取，省去一次循环遍历，虽然可能只需要循环遍历不到2个元素。但，这就是我们为高性能说做的努力
+​	利用bean id直接从spring容器中获取，省去一次循环遍历，虽然可能只需要循环遍历不到2个元素。但，这就是我们为高性能所做的努力
 
 # 自定义配置
 

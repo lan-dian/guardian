@@ -24,14 +24,11 @@ public class TokenHandler{
 
 
     @SuppressWarnings("rawtypes")
-    public void initTokenBean(String token,String privateKey){
+    public void initTokenBean(String token, String privateKey){
         String userType = TokenUtil.getUserType(token,privateKey);
 
-        TokenService tokenService =(TokenService) applicationContext.getBean(GuardianConst.beanPrefix + userType);
-        /*if(tokenService==null){
-            throw new GuardianAnnotationException("没有为"+userType+"类型的用户注册tokenService到ioc容器中");
-        }*/
-        // GuardianService guardianService = AnnotationUtils.findAnnotation(service.getClass(), GuardianService.class);
+        TokenService tokenService =(TokenService) applicationContext.getBean(userType);
+
         tokenService.initUserInfo(token,privateKey);
         CurrentSubject.setUserType(userType);
     }

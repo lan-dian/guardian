@@ -19,7 +19,6 @@ import javax.annotation.Resource;
 import java.time.Duration;
 
 @Configuration
-@ConditionalOnBean(TokenService.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(GuardianProperties.class)
 @Import({GuardianContext.class})

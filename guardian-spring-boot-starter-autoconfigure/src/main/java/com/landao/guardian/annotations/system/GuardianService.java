@@ -6,15 +6,16 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
-@Inherited
+
 @Component
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GuardianService {
 
-    @AliasFor(value = "value",annotation = Component.class)
-    String userType() default GuardianConst.beanPrefix+GuardianConst.defaultUserType;
-
+    @AliasFor(
+            annotation = Component.class
+    )
+    String value() default GuardianConst.defaultUserType;
 
 
 }
