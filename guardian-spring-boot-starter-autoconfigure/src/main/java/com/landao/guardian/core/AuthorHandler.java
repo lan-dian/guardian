@@ -201,7 +201,7 @@ public class AuthorHandler {
     private RequiredRole findRequiredRoleAnnotation(Method method, String userType){
         RequiredRoles methodRoles = AnnotationUtils.findAnnotation(method, RequiredRoles.class);
         if (methodRoles!=null) {
-            for (RequiredRole requiredRole : methodRoles.requiredRoles()) {
+            for (RequiredRole requiredRole : methodRoles.value()) {
                 if(isUserTypeEqual(requiredRole,userType)){
                     return requiredRole;
                 }
@@ -217,7 +217,7 @@ public class AuthorHandler {
         Class<?> declaringClass = method.getDeclaringClass();
         RequiredRoles classRoles = AnnotationUtils.findAnnotation(declaringClass, RequiredRoles.class);
         if (classRoles!=null) {
-            for (RequiredRole requiredRole : classRoles.requiredRoles()) {
+            for (RequiredRole requiredRole : classRoles.value()) {
                 if(isUserTypeEqual(requiredRole,userType)){
                     return requiredRole;
                 }
