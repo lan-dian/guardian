@@ -147,7 +147,7 @@ public class GuardianProperties {
         /**
          * 不拦截的路径
          */
-        private String[] excludePathPatterns={};
+        private String[] excludePathPatterns={"/error"};
 
         public Interceptor() {
         }
