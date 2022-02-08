@@ -45,6 +45,10 @@ public class TokenHandler{
 
         initUserInfo(decodedJwt,tokenBeanType);
 
+        GuardianContext.setUserType(userType);
+        GuardianContext.login();
+        GuardianContext.setTokenService(tokenService);
+
         Object time = RedisUtils.get(GuardianConst.redisPrefix + ":"
                 + userType + ":"
                 + GuardianContext.getUserId(),Long.class);
@@ -54,10 +58,6 @@ public class TokenHandler{
                 throw new UnLoginException("该token已失效");
             }
         }
-
-        GuardianContext.setUserType(userType);
-        GuardianContext.login();
-        GuardianContext.setTokenService(tokenService);
     }
 
     /**
