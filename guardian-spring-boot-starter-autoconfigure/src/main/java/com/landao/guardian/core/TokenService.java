@@ -9,17 +9,23 @@ import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.consts.GuardianConst;
 import com.landao.guardian.consts.TokenConst;
 import com.landao.guardian.core.interfaces.Ban;
+import com.landao.guardian.core.interfaces.TokenConverter;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.RedisUtils;
 import com.landao.guardian.util.TypeUtils;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.cglib.core.Converter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -29,10 +35,21 @@ import java.util.concurrent.TimeUnit;
  * @param <T> tokenBean类型
  * @param <R> tokenBeanId类型
  */
-public class TokenService<T, R> implements BeanNameAware {
+public abstract class TokenService<T, R> implements BeanNameAware {
 
     @Resource
     private GuardianProperties guardianProperties;
+
+    @Resource
+    private ApplicationContext applicationContext;
+
+    // private static Map<Class<?>, TokenConverter> converters;
+
+    /*@PostConstruct
+    public void setConverters(){
+        Map<String, TokenConverter> converters = applicationContext.getBeansOfType(TokenConverter.class);
+
+    }*/
 
     private String userType;
 

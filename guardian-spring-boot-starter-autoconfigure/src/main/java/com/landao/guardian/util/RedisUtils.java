@@ -11,16 +11,16 @@ public class RedisUtils {
 
     public static SetOperations<String, Object> set;
 
-    public static HashOperations<String,String,Object> map;
+    public static HashOperations<String,Object, Object> map;
 
     public static ListOperations<String, Object> list;
 
     @Autowired
-    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate){
-        RedisUtils.redis=redisTemplate;
-        value=redis.opsForValue();
-        set=redis.opsForSet();
-        map=redis.opsForHash();
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        RedisUtils.redis = redisTemplate;
+        value = redis.opsForValue();
+        set = redis.opsForSet();
+        map = redis.opsForHash();
         list = redis.opsForList();
     }
 

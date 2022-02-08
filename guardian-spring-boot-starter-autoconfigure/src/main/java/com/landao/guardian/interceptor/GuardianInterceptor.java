@@ -58,9 +58,12 @@ public class GuardianInterceptor implements HandlerInterceptor {
 
         String header = request.getHeader(tokenProperties.getHeaderName());
         if(StringUtils.hasText(header)){
-            String token = TokenUtils.getValidToken(header, tokenProperties.getPrefix());
-            //token初始化
-            tokenHandler.initTokenBean(token,tokenProperties.getPrivateKey());
+            String prefix = tokenProperties.getPrefix();
+            if(!header.trim().equals(prefix)){//说明仅仅传递了Bearer,不做处理
+                String token = TokenUtils.getValidToken(header, tokenProperties.getPrefix());
+                //token初始化
+                tokenHandler.initTokenBean(token,tokenProperties.getPrivateKey());
+            }
         }
 
         if(GuardianContext.isLogin()){
