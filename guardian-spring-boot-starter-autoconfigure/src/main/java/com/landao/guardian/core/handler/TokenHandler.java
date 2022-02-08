@@ -41,7 +41,7 @@ public class TokenHandler{
         }
         TokenService<?,?> tokenService=(TokenService<?,?>)bean;
 
-        Class<?> tokenBeanType = TypeUtils.getFirstGeneraType(token);
+        Class<?> tokenBeanType = TypeUtils.getFirstGeneraType(tokenService);
 
         initUserInfo(decodedJwt,tokenBeanType);
 
