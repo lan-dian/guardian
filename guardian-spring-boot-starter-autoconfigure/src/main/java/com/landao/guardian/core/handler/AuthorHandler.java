@@ -5,7 +5,7 @@ import com.landao.guardian.annotations.author.RequiredRole;
 import com.landao.guardian.annotations.author.RequiredRoles;
 import com.landao.guardian.annotations.system.Handler;
 import com.landao.guardian.core.GuardianContext;
-import com.landao.guardian.entity.enums.LogicType;
+import com.landao.guardian.enums.LogicType;
 import com.landao.guardian.exception.author.UnAuthorizationException;
 import com.landao.guardian.exception.author.UnLoginException;
 import com.landao.guardian.exception.system.GuardianAnnotationException;

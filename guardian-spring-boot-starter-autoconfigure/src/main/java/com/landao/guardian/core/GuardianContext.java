@@ -1,6 +1,7 @@
 package com.landao.guardian.core;
 
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.landao.guardian.exception.author.UnLoginException;
 
 import java.util.*;
@@ -28,6 +29,8 @@ public class GuardianContext {
     private Set<String> roles;
 
     private Set<String> permissions;
+
+    private DecodedJWT decodedJWT;
 
     private Object extra;
 
@@ -141,6 +144,19 @@ public class GuardianContext {
 
     public static void setExtra(Object extra) {
         getCurrent().extra=extra;
+    }
+
+    public static DecodedJWT getDecodedJWT() {
+        return getCurrent().decodedJWT;
+    }
+
+    public static void setDecodedJWT(DecodedJWT decodedJWT) {
+        getCurrent().decodedJWT=decodedJWT;
+    }
+
+    public static long getPublishTime(){
+        Date issuedAt = getDecodedJWT().getIssuedAt();
+        return issuedAt.getTime();
     }
 
 }

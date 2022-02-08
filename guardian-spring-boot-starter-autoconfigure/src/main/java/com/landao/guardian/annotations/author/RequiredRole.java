@@ -2,7 +2,7 @@ package com.landao.guardian.annotations.author;
 
 
 import com.landao.guardian.consts.GuardianConst;
-import com.landao.guardian.entity.enums.LogicType;
+import com.landao.guardian.enums.LogicType;
 
 import java.lang.annotation.*;
 

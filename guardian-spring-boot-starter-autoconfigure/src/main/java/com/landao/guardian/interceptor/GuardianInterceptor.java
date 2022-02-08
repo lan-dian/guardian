@@ -5,9 +5,9 @@ import com.landao.guardian.core.handler.BanHandler;
 import com.landao.guardian.core.handler.LoginHandler;
 import com.landao.guardian.core.handler.AuthorHandler;
 import com.landao.guardian.core.GuardianContext;
-import com.landao.guardian.core.TokenHandler;
+import com.landao.guardian.core.handler.TokenHandler;
 import com.landao.guardian.core.interfaces.GuardianHandler;
-import com.landao.guardian.util.TokenUtil;
+import com.landao.guardian.util.TokenUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
@@ -58,17 +58,17 @@ public class GuardianInterceptor implements HandlerInterceptor {
 
         String header = request.getHeader(tokenProperties.getHeaderName());
         if(StringUtils.hasText(header)){
-            String token = TokenUtil.getValidToken(header, tokenProperties.getPrefix());
+            String token = TokenUtils.getValidToken(header, tokenProperties.getPrefix());
             //token初始化
             tokenHandler.initTokenBean(token,tokenProperties.getPrivateKey());
         }
 
-        //登陆验证
-        loginHandler.loginCheck(method);
-
         if(GuardianContext.isLogin()){
             banHandler.checkBan();
         }
+
+        //登陆验证
+        loginHandler.loginCheck(method);
 
         //权限验证
         authorHandler.checkAuthor(method);

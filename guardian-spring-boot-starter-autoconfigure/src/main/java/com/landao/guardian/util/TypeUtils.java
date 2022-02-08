@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 
-public abstract class JavaTypeUtil {
+public abstract class TypeUtils {
 
     /**
      * 获取类的泛型类型

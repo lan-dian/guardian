@@ -1,18 +1,25 @@
-package com.landao.guardian.core;
+package com.landao.guardian.core.handler;
 
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.landao.guardian.annotations.system.Handler;
 import com.landao.guardian.annotations.token.UserId;
+import com.landao.guardian.consts.GuardianConst;
+import com.landao.guardian.consts.TokenConst;
+import com.landao.guardian.core.GuardianContext;
+import com.landao.guardian.core.TokenService;
+import com.landao.guardian.exception.author.UnLoginException;
 import com.landao.guardian.exception.system.GuardianAnnotationException;
 import com.landao.guardian.exception.token.TokenBeanException;
-import com.landao.guardian.util.JavaTypeUtil;
-import com.landao.guardian.util.TokenUtil;
+import com.landao.guardian.util.RedisUtils;
+import com.landao.guardian.util.TypeUtils;
+import com.landao.guardian.util.TokenUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
+
 
 @Handler
 public class TokenHandler{
@@ -22,9 +29,11 @@ public class TokenHandler{
 
 
     public void initTokenBean(String token, String privateKey){
-        DecodedJWT decodedJwt = TokenUtil.getDecodedJwt(token, privateKey);
+        DecodedJWT decodedJwt = TokenUtils.getDecodedJwt(token, privateKey);
 
-        String userType = TokenUtil.getUserType(decodedJwt);
+        GuardianContext.setDecodedJWT(decodedJwt);
+
+        String userType = decodedJwt.getSubject();
 
         Object bean = applicationContext.getBean(userType);
         if(!(bean instanceof TokenService)){
@@ -32,9 +41,19 @@ public class TokenHandler{
         }
         TokenService<?,?> tokenService=(TokenService<?,?>)bean;
 
-        Class<?> tokenBeanType = JavaTypeUtil.getFirstGeneraType(token);
+        Class<?> tokenBeanType = TypeUtils.getFirstGeneraType(token);
 
         initUserInfo(decodedJwt,tokenBeanType);
+
+        Object time = RedisUtils.get(GuardianConst.redisPrefix + ":"
+                + userType + ":"
+                + GuardianContext.getUserId(),Long.class);
+        if(time!=null){
+            long publishTime = GuardianContext.getPublishTime();
+            if(publishTime<(long) time){
+                throw new UnLoginException("该token已失效");
+            }
+        }
 
         GuardianContext.setUserType(userType);
         GuardianContext.login();
@@ -63,19 +82,10 @@ public class TokenHandler{
 
     private void setField(Field field, Object userBean, DecodedJWT decoder) {
         Class<?> fieldType = field.getType();
-        Object fieldValue = null;
+        Object fieldValue;
         if (field.isAnnotationPresent(UserId.class)) {
-            String subject = decoder.getSubject();
-            Object userId = null;
-            if (JavaTypeUtil.isInteger(fieldType)) {
-                userId =  Integer.valueOf(subject);
-            } else if (JavaTypeUtil.isLong(fieldType)) {
-                userId =  Long.valueOf(subject);
-            } else if (JavaTypeUtil.isString(fieldType)) {
-                userId =  subject;
-            }
-            GuardianContext.setUserId(userId);
-            fieldValue = userId;
+            fieldValue=decoder.getClaim(TokenConst.userId).as(fieldType);
+            GuardianContext.setUserId(fieldValue);
         } else {
             fieldValue = decoder.getClaim(field.getName()).as(fieldType);
         }

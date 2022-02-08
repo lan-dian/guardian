@@ -1,4 +1,4 @@
-package com.landao.guardian.entity.enums;
+package com.landao.guardian.enums;
 
 public enum LogicType {
 

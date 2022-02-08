@@ -3,6 +3,8 @@ package com.landao.guardian.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+import java.util.concurrent.TimeUnit;
+
 @ConfigurationProperties(prefix = "guardian")
 public class GuardianProperties {
 
@@ -56,6 +58,17 @@ public class GuardianProperties {
          */
         private String headerName="Authorization";
 
+        /**
+         * token有效时间
+         * @apiNote 单位默认单位为天,-1永不过期
+         */
+        private Long  effectiveTime=-1L;
+
+        /**
+         * token有效时间的单位
+         */
+        private TimeUnit timeUnit=TimeUnit.DAYS;
+
         public Token() {
         }
 
@@ -84,6 +97,22 @@ public class GuardianProperties {
 
         public void setPrefix(String prefix) {
             this.prefix = prefix;
+        }
+
+        public Long getEffectiveTime() {
+            return effectiveTime;
+        }
+
+        public void setEffectiveTime(Long effectiveTime) {
+            this.effectiveTime = effectiveTime;
+        }
+
+        public TimeUnit getTimeUnit() {
+            return timeUnit;
+        }
+
+        public void setTimeUnit(TimeUnit timeUnit) {
+            this.timeUnit = timeUnit;
         }
     }
 

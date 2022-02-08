@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 利用spring mvc上下文的实现的工具类
  */
-public abstract class NewxWebUtil {
+public abstract class NewxWebUtils {
 
     public static HttpServletRequest getRequest(){
         return getRequestAttributes().getRequest();

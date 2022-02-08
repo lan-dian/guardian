@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * 工具类不适合用户使用
  */
-public abstract class TokenUtil {
+public abstract class TokenUtils {
 
     /**
      * 解析token
@@ -28,16 +28,6 @@ public abstract class TokenUtil {
             throw new TokenException("token非法:"+token);
         }
         return decodedjwt;
-    }
-
-    public static String getUserType(String token,String privateKey){
-        DecodedJWT decodedJwt = getDecodedJwt(token, privateKey);
-        return getUserType(decodedJwt);
-    }
-
-
-    public static String getUserType(DecodedJWT decodedJwt){
-        return decodedJwt.getClaim(TokenConst.userType).asString();
     }
 
     /**

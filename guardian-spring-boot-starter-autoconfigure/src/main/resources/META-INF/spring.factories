@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.landao.guardian.GuardianAutoConfigure,\
 com.landao.guardian.HandlerScanner,\
-com.landao.guardian.interceptor.GuardianConfigurer
+com.landao.guardian.interceptor.GuardianConfigurer,\
+com.landao.guardian.RedisAutoConfigure
