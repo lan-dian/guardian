@@ -4,16 +4,14 @@ package com.landao.guardian.core;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.consts.GuardianConst;
 import com.landao.guardian.consts.TokenConst;
-import com.landao.guardian.core.interfaces.BanDTO;
+import com.landao.guardian.core.interfaces.Ban;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.RedisUtils;
-import com.landao.guardian.util.TokenUtils;
 import com.landao.guardian.util.TypeUtils;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.util.ReflectionUtils;
@@ -69,47 +67,29 @@ public class TokenService<T, R> implements BeanNameAware {
         return GuardianContext.getUserType();
     }
 
-    public BanDTO checkBan() {
-        return new BanDTO() {
-            @Override
-            public boolean isBan() {
-                return false;
-            }
-
-            @Override
-            public String getThrowMsg() {
-                return null;
-            }
-        };
-    }
-
-
-    public void logout(){
-        RedisUtils.set(GuardianConst.redisPrefix + ":"
-                + getUserType() + ":"
-                + getUserId(),System.currentTimeMillis());
-        GuardianContext.logout();
+    public Ban checkBan() {
+        return () -> false;
     }
 
     /**
-     * 废除过期的token
+     * 退出登陆
+     * @apiNote 使用场景:
+     * 1.退出登陆
+     * 2.修改密码(之后
+     * 3.获取新token并且废弃旧token(之前,个人觉得意义不大
      */
-    public void abolishOutToken(String newToken){
-        DecodedJWT decodedJwt = TokenUtils.getDecodedJwt(newToken, guardianProperties.getToken().getPrivateKey());
-        Date issuedAt = decodedJwt.getIssuedAt();
-        RedisUtils.set(GuardianConst.redisPrefix + ":"
-                + getUserType() + ":"
-                + getUserId(),issuedAt.getTime());
+    public void logout(){
+        RedisUtils.value.set(GuardianConst.redisPrefix + ":" + getUserType() + ":" + getUserId(),System.currentTimeMillis());
+        GuardianContext.logout();
     }
+
 
     /**
      * 踢人下线
      * @param userId 用户id
      */
     public void kickOut(R userId){
-        RedisUtils.set(GuardianConst.redisPrefix + ":"
-                + getUserType() + ":"
-                + userId,System.currentTimeMillis());
+        RedisUtils.value.set(GuardianConst.redisPrefix + ":" + getUserType() + ":" + userId,System.currentTimeMillis());
     }
 
     public String parseToken(T userBean) {

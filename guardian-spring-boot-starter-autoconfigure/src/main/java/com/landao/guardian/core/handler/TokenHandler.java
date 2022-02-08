@@ -15,7 +15,9 @@ import com.landao.guardian.util.RedisUtils;
 import com.landao.guardian.util.TypeUtils;
 import com.landao.guardian.util.TokenUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
@@ -26,6 +28,9 @@ public class TokenHandler{
 
     @Resource
     private ApplicationContext applicationContext;
+
+    @Resource
+    private RedisTemplate<String, Object> redis;
 
 
     public void initTokenBean(String token, String privateKey){
@@ -49,12 +54,12 @@ public class TokenHandler{
         GuardianContext.login();
         GuardianContext.setTokenService(tokenService);
 
-        Object time = RedisUtils.get(GuardianConst.redisPrefix + ":"
+        Long expiredTime = (Long)RedisUtils.value.get(GuardianConst.redisPrefix + ":"
                 + userType + ":"
-                + GuardianContext.getUserId(),Long.class);
-        if(time!=null){
+                + GuardianContext.getUserId());
+        if(expiredTime!=null){
             long publishTime = GuardianContext.getPublishTime();
-            if(publishTime<(long) time){
+            if(expiredTime.compareTo(publishTime)>0){
                 throw new UnLoginException("该token已失效");
             }
         }
