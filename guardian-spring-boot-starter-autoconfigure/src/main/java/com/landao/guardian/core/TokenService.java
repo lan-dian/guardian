@@ -8,8 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.landao.guardian.annotations.token.UserId;
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.consts.TokenConst;
-import com.landao.guardian.core.context.CurrentSubject;
-import com.landao.guardian.core.context.GuardianContext;
 import com.landao.guardian.core.interfaces.BanDTO;
 import com.landao.guardian.entity.model.DefaultBanDTO;
 import com.landao.guardian.exception.token.TokenBeanException;
@@ -17,10 +15,7 @@ import com.landao.guardian.exception.token.TokenException;
 import com.landao.guardian.util.JavaTypeUtil;
 import com.landao.guardian.util.TokenUtil;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
@@ -40,19 +35,18 @@ public class TokenService<T, R> implements BeanNameAware{
 
     private String userType;
 
-
     public void setExtra() {
         GuardianContext.setExtra(null);
     }
 
     @SuppressWarnings("all")
     public <U> U getExtra(Class<U> type) {
-        return (U) CurrentSubject.getExtra();
+        return (U) GuardianContext.getExtra();
     }
 
     @SuppressWarnings("unchecked")
     public T getTokenBean() {
-        return (T) CurrentSubject.getUser();
+        return (T) GuardianContext.getUser();
     }
 
     public Set<String> getRoles() {
@@ -65,11 +59,11 @@ public class TokenService<T, R> implements BeanNameAware{
 
     @SuppressWarnings("unchecked")
     public R getUserId() {
-        return (R) CurrentSubject.getUserId();
+        return (R) GuardianContext.getUserId();
     }
 
     public String getUserType() {
-        return CurrentSubject.getUserType();
+        return GuardianContext.getUserType();
     }
 
     public BanDTO checkBan() {
@@ -156,54 +150,6 @@ public class TokenService<T, R> implements BeanNameAware{
     private static boolean isClaimType(Class<?> clazz) {
         return JavaTypeUtil.isInteger(clazz) || JavaTypeUtil.isString(clazz) || JavaTypeUtil.isLong(clazz);
     }
-
-    /**
-     * 初始化用户所有信息
-     */
-    @SuppressWarnings("unchecked")
-    void initUserInfo(String token, String privateKey) {
-        DecodedJWT decodedJwt = TokenUtil.getDecodedJwt(token, privateKey);
-        Class<?> tokenBeanClass = JavaTypeUtil.getFirstGeneraType(this);
-        T userBean = null;
-        try {
-            userBean = (T) tokenBeanClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new TokenBeanException(tokenBeanClass.getName() + "没有无参构造器");
-        }
-
-        Field[] fields = tokenBeanClass.getDeclaredFields();
-        for (Field field : fields) {
-            setField(field, userBean, decodedJwt);
-        }
-        CurrentSubject.setUser(userBean);
-        CurrentSubject.login();
-        CurrentSubject.setTokenService(this);
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private void setField(Field field, T userBean, DecodedJWT decoder) {
-        Class<?> fieldType = field.getType();
-        Object fieldValue = null;
-        if (field.isAnnotationPresent(UserId.class)) {
-            String subject = decoder.getSubject();
-            R userId = null;
-            if (JavaTypeUtil.isInteger(fieldType)) {
-                userId = (R) Integer.valueOf(subject);
-            } else if (JavaTypeUtil.isLong(fieldType)) {
-                userId = (R) Long.valueOf(subject);
-            } else if (JavaTypeUtil.isString(fieldType)) {
-                userId = (R) subject;
-            }
-            CurrentSubject.setUserId(userId);
-            fieldValue = userId;
-        } else {
-            fieldValue = decoder.getClaim(field.getName()).as(fieldType);
-        }
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, userBean, fieldValue);
-    }
-
 
     @Override
     public void setBeanName(String name) {

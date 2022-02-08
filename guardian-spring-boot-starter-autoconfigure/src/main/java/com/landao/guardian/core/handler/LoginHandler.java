@@ -1,8 +1,8 @@
-package com.landao.guardian.core;
+package com.landao.guardian.core.handler;
 
 import com.landao.guardian.annotations.system.Handler;
 import com.landao.guardian.annotations.author.RequiredLogin;
-import com.landao.guardian.core.context.CurrentSubject;
+import com.landao.guardian.core.GuardianContext;
 import com.landao.guardian.exception.author.UnLoginException;
 import com.landao.guardian.exception.system.GuardianAnnotationException;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -10,7 +10,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 @Handler
 public class LoginHandler {
@@ -18,7 +17,7 @@ public class LoginHandler {
 
     public void loginCheck(Method method) {
         RequiredLogin requiredLoginAnnotation = getRequiredLoginAnnotation(method);
-        boolean login = CurrentSubject.isLogin();
+        boolean login = GuardianContext.isLogin();
         if(login){//登陆
             checkIfLogin(requiredLoginAnnotation);
         }else {//未登陆
@@ -40,7 +39,7 @@ public class LoginHandler {
                 throw new GuardianAnnotationException("请不要在RequiredLogin同时指明onlyFor和forbidden这不符合逻辑");
             }
             if (onlyFor.length != 0 || forbidden.length != 0) {
-                String userType = CurrentSubject.getUserType();
+                String userType = GuardianContext.getUserType();
                 if(onlyFor.length!=0){//设置了仅仅容许部分用户登陆
                     for (String allowed : onlyFor) {
                         if(Objects.equals(allowed,userType)){

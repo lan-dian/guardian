@@ -1,10 +1,10 @@
-package com.landao.guardian.core;
+package com.landao.guardian.core.handler;
 
 import com.landao.guardian.annotations.author.RequiredPermission;
 import com.landao.guardian.annotations.author.RequiredRole;
 import com.landao.guardian.annotations.author.RequiredRoles;
 import com.landao.guardian.annotations.system.Handler;
-import com.landao.guardian.core.context.CurrentSubject;
+import com.landao.guardian.core.GuardianContext;
 import com.landao.guardian.entity.enums.LogicType;
 import com.landao.guardian.exception.author.UnAuthorizationException;
 import com.landao.guardian.exception.author.UnLoginException;
@@ -29,9 +29,9 @@ public class AuthorHandler {
 
 
     public void checkAuthor(Method method){
-        boolean login = CurrentSubject.isLogin();
+        boolean login = GuardianContext.isLogin();
         if(login){//登陆
-            String userType = CurrentSubject.getUserType();
+            String userType = GuardianContext.getUserType();
             checkIfLogin(method,userType);
         }else {//未登陆
             checkIfUnLogin(method);
@@ -52,7 +52,7 @@ public class AuthorHandler {
             return;
         }
         LogicType logicType = requiredRoleAnnotation.logicType();
-        Set<String> userRoles = CurrentSubject.getRoles();
+        Set<String> userRoles = GuardianContext.getRoles();
         if(userRoles.isEmpty()){
             throw new UnAuthorizationException("该用户未包含任何角色");
         }
@@ -92,7 +92,7 @@ public class AuthorHandler {
         if(permissions.length==0){
             throw new GuardianAnnotationException("RequiredPermission的permissions至少指明一个权限表达式");
         }
-        Set<String> userPermissions = CurrentSubject.getPermissions();
+        Set<String> userPermissions = GuardianContext.getPermissions();
         if(userPermissions.isEmpty()){
             //如果用户没有任何特殊的权限，那么它不可能被禁止,也不可能通过任何权限
             return true;//继续查询角色是否满足

@@ -1,10 +1,10 @@
 package com.landao.guardian.interceptor;
 
 import com.landao.guardian.config.GuardianProperties;
-import com.landao.guardian.core.BanHandler;
-import com.landao.guardian.core.LoginHandler;
-import com.landao.guardian.core.AuthorHandler;
-import com.landao.guardian.core.context.CurrentSubject;
+import com.landao.guardian.core.handler.BanHandler;
+import com.landao.guardian.core.handler.LoginHandler;
+import com.landao.guardian.core.handler.AuthorHandler;
+import com.landao.guardian.core.GuardianContext;
 import com.landao.guardian.core.TokenHandler;
 import com.landao.guardian.core.interfaces.GuardianHandler;
 import com.landao.guardian.util.TokenUtil;
@@ -50,6 +50,8 @@ public class GuardianInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
+        GuardianContext.clear();//必然成功的保障
+
         Method method = ((HandlerMethod) handler).getMethod();
 
         GuardianProperties.Token tokenProperties = guardianProperties.getToken();
@@ -64,7 +66,7 @@ public class GuardianInterceptor implements HandlerInterceptor {
         //登陆验证
         loginHandler.loginCheck(method);
 
-        if(CurrentSubject.isLogin()){
+        if(GuardianContext.isLogin()){
             banHandler.checkBan();
         }
 
@@ -72,8 +74,8 @@ public class GuardianInterceptor implements HandlerInterceptor {
         authorHandler.checkAuthor(method);
 
         //设置额外字段
-        if(CurrentSubject.isLogin()){
-            CurrentSubject.getTokenService().setExtra();
+        if(GuardianContext.isLogin()){
+            GuardianContext.getTokenService().setExtra();
         }
 
         Map<String, GuardianHandler> handlers = applicationContext.getBeansOfType(GuardianHandler.class);
@@ -92,12 +94,12 @@ public class GuardianInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        CurrentSubject.clearAll();
+        GuardianContext.clear();
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        CurrentSubject.clearAll();
+        GuardianContext.clear();
     }
 
 }

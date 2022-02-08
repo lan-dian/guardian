@@ -1,10 +1,8 @@
 package com.landao.guardian;
 
-import com.landao.guardian.core.TokenService;
 import com.landao.guardian.interceptor.GuardianInterceptor;
 import com.landao.guardian.config.GuardianProperties;
-import com.landao.guardian.core.context.GuardianContext;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import com.landao.guardian.core.GuardianContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,7 +14,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 
 @Configuration
 @ConditionalOnWebApplication

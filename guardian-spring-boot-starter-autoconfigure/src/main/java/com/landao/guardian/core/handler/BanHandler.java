@@ -1,7 +1,7 @@
-package com.landao.guardian.core;
+package com.landao.guardian.core.handler;
 
 import com.landao.guardian.annotations.system.Handler;
-import com.landao.guardian.core.context.CurrentSubject;
+import com.landao.guardian.core.GuardianContext;
 import com.landao.guardian.core.interfaces.BanDTO;
 import com.landao.guardian.exception.author.UnAuthorizationException;
 
@@ -13,7 +13,7 @@ public class BanHandler {
      * 最简单的handler
      */
     public void checkBan(){
-        BanDTO banDTO = CurrentSubject.getTokenService().checkBan();
+        BanDTO banDTO = GuardianContext.getTokenService().checkBan();
         if(banDTO.isBan()){
             throw new UnAuthorizationException(banDTO.getThrowMsg());
         }
