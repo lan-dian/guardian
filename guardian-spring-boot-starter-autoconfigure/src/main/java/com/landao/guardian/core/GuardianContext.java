@@ -88,6 +88,11 @@ public class GuardianContext {
         return getCurrent().userId;
     }
 
+    @SuppressWarnings("all")
+    public static <T> T getUserId(Class<T> type){
+        return (T)getUserId();
+    }
+
     public static void setUserId(Object userId) {
         getCurrent().userId = userId;
     }
