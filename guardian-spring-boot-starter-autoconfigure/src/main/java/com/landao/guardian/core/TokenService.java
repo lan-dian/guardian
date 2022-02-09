@@ -85,7 +85,7 @@ public abstract class TokenService<T, R> implements BeanNameAware {
     }
 
     public Ban checkBan() {
-        return () -> false;
+        return () -> null;
     }
 
     /**

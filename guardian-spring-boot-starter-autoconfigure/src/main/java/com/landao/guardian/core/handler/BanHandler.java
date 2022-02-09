@@ -4,6 +4,7 @@ import com.landao.guardian.annotations.system.Handler;
 import com.landao.guardian.core.GuardianContext;
 import com.landao.guardian.core.interfaces.Ban;
 import com.landao.guardian.exception.author.UnAuthorizationException;
+import org.springframework.util.StringUtils;
 
 @Handler
 public class BanHandler {
@@ -14,8 +15,8 @@ public class BanHandler {
      */
     public void checkBan(){
         Ban ban = GuardianContext.getTokenService().checkBan();
-        if(ban.info()!=null){
-            throw new UnAuthorizationException((String) ban.info());
+        if(StringUtils.hasText(ban.info())){
+            throw new UnAuthorizationException(ban.info());
         }
     }
 
