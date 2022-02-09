@@ -45,7 +45,7 @@ public class GuardianAutoConfigure {
     private CorsConfiguration buildConfig(GuardianProperties.Cors cors) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         //*表示对所有的地址都可以访问
-        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedOriginPattern("*");
         //跨域的请求头
         corsConfiguration.addAllowedHeader("*");
         //跨域的请求方法
