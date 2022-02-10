@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  */
 public abstract class GuardianUtils {
 
-    public static Set<String> enumToString(Set<Enum<?>> enums){
+    public static <T extends Enum<?>> Set<String> enumToString(Set<T> enums){
         return enums.stream().map(Enum::name).collect(Collectors.toSet());
     }
 

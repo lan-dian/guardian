@@ -2,6 +2,7 @@ package com.landao.guardian.annotations.author;
 
 
 import com.landao.guardian.enums.LogicType;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,6 +13,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface RequiredPermission {
 
+    @AliasFor("permissions")
+    String[] value() default {};
+
+    @AliasFor("value")
     String[] permissions() default {};
 
     /**
