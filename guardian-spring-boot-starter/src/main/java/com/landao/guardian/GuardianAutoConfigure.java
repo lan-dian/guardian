@@ -4,6 +4,7 @@ package com.landao.guardian;
 import com.landao.guardian.interceptor.GuardianInterceptor;
 import com.landao.guardian.config.GuardianProperties;
 import com.landao.guardian.core.GuardianContext;
+import com.landao.guardian.util.GuardianUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -20,7 +21,7 @@ import javax.annotation.Resource;
 @Configuration
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(GuardianProperties.class)
-@Import({GuardianContext.class})
+@Import({GuardianContext.class, GuardianUtils.class})
 public class GuardianAutoConfigure {
 
     @Resource

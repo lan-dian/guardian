@@ -11,21 +11,25 @@
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="fileset" name="GuardianAutoConfigure" removed="false">
+          <file>file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/src/main/java/com/landao/guardian/GuardianAutoConfigure.java</file>
+        </fileset>
+      </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5">
-    <output url="file://$MODULE_DIR$/target/classes" />
-    <output-test url="file://$MODULE_DIR$/target/test-classes" />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/target/test-classes" />
+    <content url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure">
+      <sourceFolder url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../guardian-spring-boot-starter-autoconfigure/target" />
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="guardian-spring-boot-starter-autoconfigure" />
+    <orderEntry type="library" name="Java EE 6-Java EE 6" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.8" level="project" />
@@ -41,9 +45,9 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.3.8" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.28" level="project" />
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:3.18.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.11.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.12.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-json:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.3" level="project" />
@@ -58,6 +62,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:5.3.8" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.8" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.3.8" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-configuration-processor:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-redis:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-redis:2.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-keyvalue:2.5.2" level="project" />
@@ -65,7 +70,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:5.3.8" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-oxm:5.3.8" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.3.8" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.31" level="project" />
     <orderEntry type="library" name="Maven: io.lettuce:lettuce-core:6.1.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.65.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.65.Final" level="project" />
@@ -73,7 +78,7 @@
     <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.65.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.65.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.65.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.3.18.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.4.7" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
   </component>
 </module>

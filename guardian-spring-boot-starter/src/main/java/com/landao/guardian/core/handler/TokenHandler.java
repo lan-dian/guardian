@@ -11,6 +11,7 @@ import com.landao.guardian.core.TokenService;
 import com.landao.guardian.exception.author.UnLoginException;
 import com.landao.guardian.exception.system.GuardianAnnotationException;
 import com.landao.guardian.exception.token.TokenBeanException;
+import com.landao.guardian.util.GuardianUtils;
 import com.landao.guardian.util.RedisUtils;
 import com.landao.guardian.util.TypeUtils;
 import com.landao.guardian.util.TokenUtils;
@@ -54,9 +55,7 @@ public class TokenHandler{
         GuardianContext.login();
         GuardianContext.setTokenService(tokenService);
 
-        Long expiredTime = (Long)RedisUtils.value.get(GuardianConst.redisPrefix + ":"
-                + userType + ":"
-                + GuardianContext.getUserId());
+        Long expiredTime = (Long)RedisUtils.value.get(GuardianUtils.getRedisKey(userType,GuardianContext.getUserId()));
         if(expiredTime!=null){
             long publishTime = GuardianContext.getPublishTime();
             if(expiredTime.compareTo(publishTime)>0){

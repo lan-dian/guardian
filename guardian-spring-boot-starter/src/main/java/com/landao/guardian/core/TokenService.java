@@ -12,6 +12,7 @@ import com.landao.guardian.core.interfaces.Ban;
 import com.landao.guardian.core.interfaces.TokenConverter;
 import com.landao.guardian.exception.token.TokenBeanException;
 import com.landao.guardian.exception.token.TokenException;
+import com.landao.guardian.util.GuardianUtils;
 import com.landao.guardian.util.RedisUtils;
 import com.landao.guardian.util.TypeUtils;
 import org.springframework.beans.factory.BeanNameAware;
@@ -96,7 +97,7 @@ public abstract class TokenService<T, R> implements BeanNameAware {
      * 3.获取新token并且废弃旧token(之前,个人觉得意义不大
      */
     public void logout(){
-        RedisUtils.value.set(GuardianConst.redisPrefix + ":" + getUserType() + ":" + getUserId(),System.currentTimeMillis());
+        RedisUtils.value.set(GuardianUtils.getRedisKey(getUserType(),getUserId()),System.currentTimeMillis());
         GuardianContext.logout();
     }
 
@@ -106,7 +107,7 @@ public abstract class TokenService<T, R> implements BeanNameAware {
      * @param userId 用户id
      */
     public void kickOut(R userId){
-        RedisUtils.value.set(GuardianConst.redisPrefix + ":" + getUserType() + ":" + userId,System.currentTimeMillis());
+        RedisUtils.value.set(GuardianUtils.getRedisKey(getUserType(),userId),System.currentTimeMillis());
     }
 
     public String parseToken(T userBean) {
@@ -133,6 +134,8 @@ public abstract class TokenService<T, R> implements BeanNameAware {
 
         return builder.sign(Algorithm.HMAC256(guardianProperties.getToken().getPrivateKey()));
     }
+
+
 
     /*
      * 下面都是系统方法
