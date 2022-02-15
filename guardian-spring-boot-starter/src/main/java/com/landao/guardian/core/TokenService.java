@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T> tokenBean类型
  * @param <R> tokenBeanId类型
  */
-public abstract class TokenService<T, R> implements BeanNameAware {
+public abstract class TokenService<T, R> implements BeanNameAware,AuthorService<T,R> {
 
     @Resource
     private GuardianProperties guardianProperties;
@@ -54,37 +54,45 @@ public abstract class TokenService<T, R> implements BeanNameAware {
 
     private String userType;
 
+    @Override
     public void setExtra() {
         GuardianContext.setExtra(null);
     }
 
     @SuppressWarnings("all")
+    @Override
     public <U> U getExtra(Class<U> type) {
         return (U) GuardianContext.getExtra();
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public T getUser() {
         return (T) GuardianContext.getUser();
     }
 
+    @Override
     public Set<String> getRoles() {
         return Collections.emptySet();
     }
 
+    @Override
     public Set<String> getPermissions() {
         return Collections.emptySet();
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public R getUserId() {
         return (R) GuardianContext.getUserId();
     }
 
+    @Override
     public String getUserType() {
         return GuardianContext.getUserType();
     }
 
+    @Override
     public Ban checkBan() {
         return () -> null;
     }
@@ -96,6 +104,7 @@ public abstract class TokenService<T, R> implements BeanNameAware {
      * 2.修改密码(之后
      * 3.获取新token并且废弃旧token(之前,个人觉得意义不大
      */
+    @Override
     public void logout(){
         RedisUtils.value.set(GuardianUtils.getRedisKey(getUserType(),getUserId()),System.currentTimeMillis());
         GuardianContext.logout();
@@ -106,10 +115,12 @@ public abstract class TokenService<T, R> implements BeanNameAware {
      * 踢人下线
      * @param userId 用户id
      */
+    @Override
     public void kickOut(R userId){
         RedisUtils.value.set(GuardianUtils.getRedisKey(getUserType(),userId),System.currentTimeMillis());
     }
 
+    @Override
     public String parseToken(T userBean) {
         JWTCreator.Builder builder = getBuilder(userBean);
 
@@ -124,6 +135,7 @@ public abstract class TokenService<T, R> implements BeanNameAware {
         return builder.sign(Algorithm.HMAC256(guardianProperties.getToken().getPrivateKey()));
     }
 
+    @Override
     public String parseToken(T userBean,long time,TimeUnit timeUnit) {
         JWTCreator.Builder builder = getBuilder(userBean);
 
@@ -140,7 +152,6 @@ public abstract class TokenService<T, R> implements BeanNameAware {
     /*
      * 下面都是系统方法
      */
-
     private JWTCreator.Builder getBuilder(T userBean){
         JWTCreator.Builder builder = JWT.create();
 
